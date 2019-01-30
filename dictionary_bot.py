@@ -30,6 +30,8 @@ async def on_message(message):
 
     dictionary = PyDictionary()
 
+#############################################################################################
+
     #TODO: Migrate '!define' from PyDictionary to wordnet
     if message.content.startswith('!define'):
         #get definition
@@ -64,20 +66,47 @@ async def on_message(message):
 
         await client.send_message(message.channel, response)
 
+#############################################################################################
     if message.content.startswith("!syn"):
+        response += "Synonyms of " + word + ":\n"
         syn = []
+        synNum = 0
         for ss in wordnet.synsets(word):
             for lemma in ss.lemmas():
-                syn.append(lemma.name()) #add the synonyms to syn
+                word = lemma.name()
+                if('_' in lemma.name()):
+                    word = word.replace('_', " ")
+                syn.append(word) #add the synonyms to syn
 
-        syn = remove(syn)
+        syn = remove_dups(syn)
+
+        if(word in syn):
+            syn.remove(word)
+
+        for synonym in syn:
+            synNum += 1
+            if(synNum <= 5):
+                #Tack on another synonym plus a \n
+                response += synonym + "\n"
+            else:
+                break
+        print(syn)    
+        try:
+            await client.send_message(message.channel, response)
+        except:
+            response = "Sorry, we couldn't find that word!"
+            await client.send_message(message.channel, response)
+        
+#############################################################################################
 
 
 
-        print(syn)
 
 
-def remove(array): 
+#############################################################################################
+
+
+def remove_dups(array): 
     final_list = [] 
     for num in array: 
         if num not in final_list: 
