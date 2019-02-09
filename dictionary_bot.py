@@ -67,6 +67,7 @@ async def on_message(message):
         await client.send_message(message.channel, response)
 
 #############################################################################################
+
     if message.content.startswith("!syn"):
         response += "Synonyms of " + word + ":\n"
         syn = []
@@ -78,9 +79,9 @@ async def on_message(message):
                     word = word.replace('_', " ")
                 syn.append(word) #add the synonyms to syn
 
-        syn = remove_dups(syn)
+        syn = set(syn) #use a set to get rid of duplicates
 
-        if(word in syn):
+        if(word in syn): #a word being its own synonym is redundant
             syn.remove(word)
 
         for synonym in syn:
@@ -90,29 +91,48 @@ async def on_message(message):
                 response += synonym + "\n"
             else:
                 break
-        print(syn)    
-        try:
+
+        try: #make sure we dont have an empty message to send (ie. no synonyms/not a word)
             await client.send_message(message.channel, response)
         except:
             response = "Sorry, we couldn't find that word!"
             await client.send_message(message.channel, response)
-        
-#############################################################################################
-
-
-
-
 
 #############################################################################################
 
+    if message.content.startswith("!ant"):
+        response += "Antonyms of " + word + ":\n"
+        ant = []
+        antNum = 0
+        for ss in wordnet.synsets(word):
+            for lemma in ss.lemmas():
+                word = lemma.name()
+                if('_' in lemma.name()):
+                    word = word.replace('_', " ")
+                
+                if lemma.antonyms():
+                    ant.append(lemma.antonyms()[0].name()) #add the synonyms to syn
 
-def remove_dups(array): 
-    final_list = [] 
-    for num in array: 
-        if num not in final_list: 
-            final_list.append(num) 
-    return final_list
+        ant = set(ant) #use a set to get rid of duplicates
 
+        if(word in ant): #a word being its own antonym is redundant
+            ant.remove(word)
+
+        for antonym in ant:
+            antNum += 1
+            if(antNum <= 5):
+                #Tack on another synonym plus a \n
+                response += antonym + "\n"
+            else:
+                break
+
+        try: #make sure we dont have an empty message to send (ie. no ants/not a word)
+            await client.send_message(message.channel, response)
+        except:
+            response = "Sorry, we couldn't find that word!"
+            await client.send_message(message.channel, response)
+
+#############################################################################################
 
 @client.event
 async def on_ready():
