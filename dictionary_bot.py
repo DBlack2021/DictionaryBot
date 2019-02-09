@@ -25,7 +25,7 @@ async def on_message(message):
         word = commands[1]
         print(word)
     except:
-        response = "Enter a word ya dingus"
+        response = "You forgot to enter a word!"
         await client.send_message(message.channel, response)
 
     dictionary = PyDictionary()
