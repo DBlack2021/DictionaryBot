@@ -1,3 +1,3 @@
 discord.py==0.16.12
-nltk==3.3
+nltk==3.4.5
 PyDictionary==1.5.2
